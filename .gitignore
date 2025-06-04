@@ -1,22 +1,64 @@
 *.o
-*.x 
+*.a
 *.so
+*.x 
 *.lm
 *.ln
 *.ls
-*.a
 *.i
+*.ii
+*.gch
+*.gcm
 
 *.tar
+*.tar.bz2
+
 *.ca
+*.ca.bz2
 
 *.gz
 *.bz2
 *.z
 *.Z
 
+*.swp
+
+todo.txt
+tags
+change
+changer
+
+x
+so
+a
+o
+e
+oo
+oc
+oe
+oh
+o1
+o2
+
+c1
+c2
+r1
+r2
+
 .DS_Store
+.git
 .gitattributes
 .gitnotes
+.tags
+
+.reporoot
+.repo
+.kshrc
+.profile
+.bbnewsrc
+.fullname
+.msgrc
+.swd
+.news_time
 
 
