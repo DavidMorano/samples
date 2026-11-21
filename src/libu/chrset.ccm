@@ -1,0 +1,128 @@
+/* chrset MODULE (primary-module-interface) */
+/* charset=ISO8859-1 */
+/* lang=C++20 (conformance reviewed) */
+
+/* character-bit-set */
+/* version %I% last-modified %G% */
+
+
+/* revision history:
+
+	= 1998-04-10, David A­D­ Morano
+        This code was originally written.
+
+	= 2020-01-09, David A­D­ Morano
+	I modularized this code from a header file.  Whether this
+	really turns out to be a good idea is another question.
+
+*/
+	
+/* Copyright © 1998,2020 David A­D­ Morano.  All rights reserved. */
+/* Use is subject to license terms. */
+
+/*******************************************************************************
+
+	Object:
+	chrset
+
+	Description:
+	Provide operations on a character-bit-set.
+
+	Synopsis:
+	int chrset::load(cchar *ss) noex
+	int chrset::tst(int ch) const noex
+	int chrset::set(int ch) noex
+	int chrset::clr(int ch) noex
+
+	Arguments:
+	ss		c-string of character-set to load
+	ch		character to use for particular operation
+
+	Returns:
+	==1		for test: character was present
+	==0		for test: character was not present
+	<0		error (system-return)
+
+*******************************************************************************/
+
+module ;
+
+#include	<envstandards.h>	/* ordered first to configure */
+#include	<climits>		/* CSTD |UCHAR_MAX| + |CHAR_BIT| */
+#include	<cstddef>		/* CSTD |nullptr_t| */
+#include	<cstdlib>		/* CSTD */
+#include	<concepts>		/* C++ */
+#include	<clanguage.h>		/* LIBU */
+#include	<usysbase.h>		/* LIBU */
+#include	<stdintx.h>		/* LIBU */
+#include	<baops.h>		/* LIBU */
+#include	<localmisc.h>		/* LIBU */
+
+export module chrset ;
+
+typedef ulong	word_t ;
+
+constexpr int	nbits	= (UCHAR_MAX + 1) ;
+constexpr int	nwords	= ((UCHAR_MAX + 1) / (szof(word_t) * CHAR_BIT)) ;
+
+export {
+    struct chrset {
+	word_t		bs[nwords] = {} ;	/* 32 bytes (4 words) */
+	constexpr chrset() = default ;
+	constexpr chrset(const chrset &) = delete ;
+	constexpr chrset &operator = (const chrset &) = delete ;
+	constexpr chrset &operator = (chrset &&) = delete ;
+	constexpr chrset(cchar *ss) noex {
+	    load(ss) ;
+	} ; /* end */
+	constexpr chrset(int ch) noex {
+	    BASETL(bs,ch) ;
+	} ; /* end */
+	constexpr int load(cchar *) noex ;
+	constexpr int set(int) noex ;
+	constexpr int clr(int) noex ;
+	constexpr int tst(int) const noex ;
+	int operator [] (int ch) const noex {
+	    return tst(ch) ;
+	} ; /* end */
+    } ; /* end struct (chrset) */
+} /* end export */
+
+constexpr int chrset::load(cchar *ss) noex {
+    	int		rs = SR_FAULT ;
+	if (ss) {
+	    rs = SR_OK ;
+	    for (int ch ; ((ch = (*ss & UCHAR_MAX))) ; ss += 1) {
+		BASETL(bs,ch) ;
+	    } /* end for */
+	} /* end if (non-null) */
+	return rs ;
+} /* end method (chrset::load) */
+
+constexpr int chrset::set(int ch) noex {
+    	int rs = SR_INVALID ;
+	if ((ch >= 0) && (ch < nbits)) {
+	    rs = SR_OK ;
+	    BASETL(bs,ch) ;
+	} /* end */
+	return rs ;
+} /* end method (chrset::set) */
+
+constexpr int chrset::clr(int ch) noex {
+    	int rs = SR_INVALID ;
+	if ((ch >= 0) && (ch < nbits)) {
+	    rs = SR_OK ;
+	    BACLRL(bs,ch) ;
+	} /* end */
+	return rs ;
+} /* end method (chrset::clr) */
+
+constexpr int chrset::tst(int ch) const noex {
+    	int rs = SR_INVALID ;
+	if ((ch >= 0) && (ch < nbits)) {
+	    rs = bool(BATSTL(bs,ch)) ;
+	} /* end */
+	return rs ;
+} /* end method (chrset::tst) */
+
+
