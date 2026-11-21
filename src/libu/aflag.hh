@@ -1,0 +1,121 @@
+/* aflag HEADER */
+/* charset=ISO8859-1 */
+/* lang=C++20 (conformance reviewed) */
+
+/* atomic-flag */
+/* version %I% last-modified %G% */
+
+
+/* revision history:
+
+	= 2011-07-12, David A­D­ Morano
+        This code was originally written.
+
+*/
+
+/* Copyright © 2011 David A­D­ Morano.  All rights reserved. */
+
+#ifndef	AFLAG_INCLUDE
+#define	AFLAG_INCLUDE
+#ifdef	__cplusplus			/* C++ only */
+
+
+#include	<envstandards.h>	/* MUST be first to configure */
+#include	<atomic>		/* C++STD */
+#include	<clanguage.h>		/* LIBU */
+#include	<usysbase.h>		/* LIBU */
+
+
+enum aflagmems {
+	aflagmem_set,
+	aflagmem_clear,
+	aflagmem_test,
+	aflagmem_testandset,
+	aflagmem_wait,
+	aflagmem_notify,
+	aflagmem_notifyall,
+	aflagmem_overlast
+} ; /* end enum */
+enum aflagmxs {
+	aflagmx_lockbeg,
+	aflagmx_lockend,
+	aflagmx_overlast
+} ; /* end enum */
+struct aflag ;
+struct aflag_co {
+	aflag		*op = nullptr ;
+	int		w = -1 ;
+	constexpr void operator () (aflag *p,int m) noex {
+	    op = p ;
+	    w = m ;
+	} ; /* end */
+	bool operator () () noex ;
+	bool operator () (bool) noex ;
+	operator bool () noex {
+	    return operator () () ;
+	} ; /* end */
+} ; /* end struct (aglag_co) */
+struct aflag_mx {
+	aflag		*op = nullptr ;
+	int		w = -1 ;
+	constexpr void operator () (aflag *p,int m) noex {
+	    op = p ;
+	    w = m ;
+	} ; /* end */
+	int operator () (int = -1) noex ;
+	operator int () noex {
+	    return operator () () ;
+	} ; /* end */
+} ; /* end struct (aglag_mx) */
+struct aflag {
+	friend		aflag_mx ;
+	aflag_co	set ;
+	aflag_co	clear ;
+	aflag_co	test ;
+	aflag_co	testandset ;
+	aflag_co	wait ;
+	aflag_co	notify ;
+	aflag_co	notifyall ;
+	aflag_mx	lockbeg ;
+	aflag_mx	lockend ;
+	std::atomic_flag	af{} ;
+	constexpr aflag() noex {
+	    set		(this,aflagmem_set) ;
+	    clear	(this,aflagmem_clear) ;
+	    test	(this,aflagmem_test) ;
+	    testandset	(this,aflagmem_testandset) ;
+	    wait	(this,aflagmem_wait) ;
+	    notify	(this,aflagmem_notify) ;
+	    notifyall	(this,aflagmem_notifyall) ;
+	    lockbeg	(this,aflagmx_lockbeg) ;
+	    lockend	(this,aflagmx_lockend) ;
+	} ; /* end ctor */
+	operator bool () const noex {
+	    return af.test() ;
+	} ; /* end */
+	operator int () const noex {
+	    return int(af.test()) ;
+	} ; /* end */
+	operator uint () const noex {
+	    return uint(af.test()) ;
+	} ; /* end */
+	bool operator = (const bool f) noex {
+	    bool	rf = false ;
+	    if (f) {
+		rf = af.test_and_set() ;
+	    } else {
+		rf = af.test() ;
+	        af.clear() ;
+	    } /* end if */
+	    return rf ;
+	} ; /* end method (operator-assignment) */
+    private:
+	int ilockbeg	(int = -1) noex ;
+	int ilockend	() noex ;
+} ; /* end struct (aflag) */
+
+
+#endif /* __cplusplus (C++ only) */
+#endif /* AFLAG_INCLUDE */
+
+
