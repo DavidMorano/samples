@@ -1,0 +1,127 @@
+/* filetypes HEADER */
+/* charset=ISO8859-1 */
+/* lang=C20 */
+
+/* define file types according to the S_IFMT field of |mode_t| */
+/* version %I% last-modified %G% */
+
+
+/* Copyright © 1998 David A­D­ Morano.  All rights reserved. */
+
+#ifndef	FILETYPES_INCLUDE
+#define	FILETYPES_INCLUDE
+
+
+#include	<envstandards.h>	/* ordered first to configure */
+#include	<sys/types.h>		/* POSIX */
+#include	<sys/stat.h>		/* POSIX |S_IFMT| + |mode_t| */
+#include	<dirent.h>		/* POSIX preprocesor |DT_{x}| */
+#include	<clanguage.h>		/* LIBU */
+#include	<utypedefs.h>		/* LIBU */
+#include	<utypealiases.h>	/* LIBU */
+#include	<usysdefs.h>		/* LIBU */
+
+
+#ifndef	S_IFMT
+#define	S_IFMT	(0x0F << 12)
+#endif
+
+
+enum filetypes {
+	filetype_unassigned0,		/* 0 */
+	filetype_fifo,			/* 1 */
+	filetype_chr,			/* 2 */
+	filetype_unassigned3,		/* 3 */
+	filetype_dir,			/* 4 */
+	filetype_name,			/* 5 - XENIX® special named file */
+	filetype_blk,			/* 6 */
+	filetype_unassigned7,		/* 7 */
+	filetype_reg,			/* 8 */
+	filetype_unassigned9,		/* 9 */
+	filetype_lnk,			/* 10 */
+	filetype_unassigned11,		/* 11 */
+	filetype_sock,			/* 12 */
+	filetype_door,			/* 13 */
+	filetype_wht,			/* 14 - "event port" on Solaris® */
+	filetype_unassigned15,		/* 15 */
+	filetype_overlast,
+	filetype_pipe = filetype_fifo	/* alias */
+} ; /* end enum (filestypes */
+
+
+#ifndef	DT_UA0
+#define	DT_UA0		0
+#endif
+
+#ifndef	DT_FIFO
+#define	DT_FIFO		filetype_fifo
+#endif
+
+#ifndef	DT_CHR
+#define	DT_CHR		filetype_chr
+#endif
+
+#ifndef	DT_DIR
+#define	DT_DIR		filetype_dir
+#endif
+
+#ifndef	DT_NAME
+#define	DT_NAME		filetype_name
+#endif
+
+#ifndef	DT_BLK
+#define	DT_BLK		filetype_blk
+#endif
+
+#ifndef	DT_REG
+#define	DT_REG		filetype_reg
+#endif
+
+#ifndef	DT_LNK
+#define	DT_LNK		filetype_lnk
+#endif
+
+#ifndef	DT_SOCK
+#define	DT_SOCK		filetype_sock
+#endif
+
+#ifndef	DT_DOOR
+#define	DT_DOOR		filetype_door
+#endif
+
+#ifndef	DT_WHT
+#define	DT_WHT		filetype_wht
+#endif
+
+#ifndef	DT_PIPE
+#define	DT_PIPE		filetype_fifo
+#endif
+
+#ifndef	DT_OVERLAST
+#define	DT_OVERLAST	filetype_overlast
+#endif
+
+
+EXTERNC_begin
+local inline filetypes filetype(mode_t m) noex {
+	cushort	uv = ushort(m) ;
+	return filetypes((uv & S_IFMT) >> 12) ;
+} /* end subroutine (filetype) */
+EXTERNC_end
+
+#ifdef	__cplusplus
+struct filetyper {
+    	cchar	*name[filetype_overlast + 1] ;
+	consteval void mkname() noex ;
+	consteval filetyper() noex ;
+} ; /* end struct */
+#endif /* __cplusplus */
+
+#ifdef	__cplusplus
+extern const filetyper	filetype_data ;
+#endif /* __cplusplus */
+
+
+#endif /* FILETYPES_INCLUDE */
+
+
