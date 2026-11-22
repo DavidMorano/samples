@@ -1,0 +1,195 @@
+/* deb1 MODULE (module-implemetation-unit) */
+/* charset=ISO8859-1 */
+/* lang=C++20 (conformance reviewed) */
+
+/* UNIX® kernel support subroutines */
+/* version %I% last-modified %G% */
+
+
+/* revision history:
+
+	= 1998-09-10, David A­D­ Morano
+	This subroutine was written for Rightcore Network Services.
+
+	= 2020-02-23, David A­D­ Morano
+	Modularized.
+
+*/
+
+/* Copyright © 1998,2020 David A­D­ Morano.  All rights reserved. */
+
+/*******************************************************************************
+
+	Group:
+	debon
+	debfd
+	debprintf
+
+	Description:
+	These subroutines are a hack for deb-printfs where the normal
+	debugging facilities are not available (for whatever reason).
+
+	Synopsis:
+	int debfd(int dfd) noex
+	int debprintf(cchar *func,cchar *fmt,...) noex
+
+	Arguments:
+	dfd		file-description to use for debug output
+	func		c-string function-name pointer
+	fmt		c-string formatting specification pointer
+	...		|printf|-like arguments
+
+	Returns:
+	>=0		OK
+	<0		error (system-return)
+
+*******************************************************************************/
+
+module ;
+
+#include	<envstandards.h>	/* ordered first to configure */
+#include	<climits>		/* CSTD |INT_MAX| */
+#include	<cstddef>		/* CSTD */
+#include	<cstdlib>		/* CSTD */
+#include	<cstdarg>		/* CSTD |va_list(3c)| */
+#include	<new>			/* C++STD */
+#include	<clanguage.h>		/* LIBU */
+#include	<usysbase.h>		/* LIBU */
+#include	<usyscalls.h>		/* LIBU */
+#include	<usupport.h>		/* LIBU |sncpy(3u)| */
+#include	<usysutility.hh>	/* LIBU |snvprintf(3u)| */
+#include	<localmisc.h>		/* LIBU */
+
+module deb ;
+
+
+/* local defines */
+
+#ifndef	MAXLINELEN
+#define	MAXLINELEN	(4 * 1024)
+#endif
+
+
+/* imported namespaces */
+
+using libu::sncpy ;			/* subroutine */
+using libu::snaddw ;			/* subroutine */
+using libu::snprintf ;			/* subroutine */
+using libu::snvprintf ;			/* subroutine */
+
+
+/* external subroutines */
+
+
+/* external variables */
+
+
+/* local variables */
+
+constexpr int	flen = MAXLINELEN ;
+
+
+/* exported variables */
+
+debon_mgr	debon ;
+int		dfd = -1 ;
+
+
+/* exported subroutines */
+
+debon_mgr::operator int () noex {
+	return (dfd >= 0) ;
+} /* end method */
+
+int debopen(cchar *fn) noex {
+    	int		rs = SR_FAULT ;
+	if (fn) ylikely {
+	    rs = SR_INVALID ;
+	    if (fn[0]) ylikely {
+		rs = SR_OK ;
+		if (dfd < 0) ylikely {
+		    cint of = (O_WRONLY | O_TRUNC) ;
+		    if ((rs = open(fn,of,0666)) < 0) {
+		        rs = (neg errno) ;
+		    } else {
+		        dfd = rs ;
+		    } /* end if (open) */
+		} /* end if (needed) */
+	    } /* end if (valid) */
+	} /* end if (non-null) */
+	return rs ;
+} /* end subroutine (debopen) */
+
+int debclose() noex {
+    	int		rs = SR_NOTOPEN ;
+	if (dfd >= 0) {
+	    if ((rs = close(dfd)) < 0) {
+		rs = (neg errno) ;
+	    } /* end if (close) */
+	} /* end if (was-open) */
+	return rs ;
+} /* end subroutine (debclose) */
+
+int debfd(int fd) noex {
+    	int		rs = SR_INVALID ;
+	if (fd >= 0) ylikely {
+	    rs = SR_OK ;
+	    if (dfd < 0) ylikely {
+    	        dfd = fd ;
+	    } /* end if (needed) */
+	} /* end if (valid) */
+	return rs ;
+} /* end subroutine (debfd) */
+
+int debprint(cchar *func,cchar *sp,int sl) noex {
+	cnothrow	nt{} ;
+    	int		rs = SR_FAULT ;
+	int		len = 0 ; /* return-value */
+	if (func && sp) ylikely {
+	    rs = SR_OK ;
+	    if (dfd >= 0) ylikely {
+    	        rs = SR_NOMEM ;
+	        if (char *fbuf = new(nt) char[flen + 1]) ylikely {
+		    if ((rs = sncpy(fbuf,flen,func,": ")) >= 0) {
+		        len += rs ;
+	                if ((rs = snaddw(fbuf,flen,len,sp,sl)) >= 0) {
+			    len += rs ;
+		            rs = u_write(dfd,fbuf,len) ;
+	                } /* end if (snvprintf) */
+		    } /* end if (sncpy) */
+		    delete [] fbuf ;
+	        } /* end if (m-a-f) */
+	    } /* end if (enabled) */
+	} /* end if (non-null) */
+	return (rs >= 0) ? len : rs ;
+} /* end subroutine (debprint) */
+
+int debprintf(cchar *func,cchar *fmt,...) noex {
+    	va_list		ap ;
+	cnothrow	nt{} ;
+    	int		rs = SR_FAULT ;
+	int		len = 0 ; /* return-value */
+	if (func && fmt) ylikely {
+	    rs = SR_OK ;
+	    if (dfd >= 0) ylikely {
+	        va_begin(ap,fmt) ;
+    	        rs = SR_NOMEM ;
+	        if (char *fbuf = new(nt) char[flen + 1]) ylikely {
+		    if ((rs = sncpy(fbuf,flen,func,": ")) >= 0) {
+		        charp	bp = (fbuf + rs) ;
+		        cint	bl = (flen - rs) ;
+		        len += rs ;
+	                if ((rs = snvprintf(bp,bl,fmt,ap)) >= 0) {
+			    len += rs ;
+		            rs = u_write(dfd,fbuf,len) ;
+	                } /* end if (snvprintf) */
+		    } /* end if (sncpy) */
+		    delete [] fbuf ;
+	        } /* end if (m-a-f) */
+	        va_end(ap) ;
+	    } /* end if (enabled) */
+	} /* end if (non-null) */
+	return (rs >= 0) ? len : rs ;
+} /* end subroutine (debprintf) */
+
+
