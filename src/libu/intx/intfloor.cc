@@ -1,0 +1,113 @@
+/* intfloor SUPPORT */
+/* charset=ISO8859-1 */
+/* lang=C++20 (conformance reviewed) */
+
+/* Integer-Flooring */
+/* version %I% last-modified %G% */
+
+
+/* revision history:
+
+	= 1998-11-01, David A­D­ Morano
+	This code was originally written.
+
+*/
+
+/* Copyright © 1998 David A­D­ Morano.  All rights reserved. */
+
+/*******************************************************************************
+
+	Name:
+	{x}floor
+
+	Description:
+	This subroutine calculates the unsigned flooring of a number
+	given a specified modulus.
+
+	Synopsis:
+	int {x}floor({xx} v,int m) noex
+
+	Arguments:
+	{x}	i, l, ll, u, ul, ull
+	v	number to find the flooring for
+	m	the modulus to use in the calculation
+
+	Returns:
+	-	the flooring value
+
+	Note:
+	Note that a "sequence point" needs to be present in this
+	code so that the total expression doesn't get optimized
+	out!
+
+
+*******************************************************************************/
+
+#include	<envstandards.h>	/* MUST be first to configure */
+#include	<sys/types.h>		/* POSIX® */
+#include	<cstddef>		/* CSTD */
+#include	<cstdlib>		/* CSTD */
+#include	<cstdint>		/* CSTD |uintptr_t| */
+#include	<clanguage.h>		/* LIBU */
+#include	<utypedefs.h>		/* LIBU */
+#include	<utypealiases.h>	/* LIBU */
+#include	<usysdefs.h>		/* LIBU */
+#include	<stdintx.h>		/* LIBU */
+#include	<localmisc.h>		/* LIBU */
+
+#include	"intfloor.h"
+
+
+/* local defines */
+
+
+/* imported namespaces */
+
+
+/* local typedefs */
+
+
+/* local subroutine-templates */
+
+template<typename T> local T xfloor(T v,int m) noex {
+	const T		n = v / m ;
+	return (n * m) ;
+} /* end subroutine-template (xfloor) */
+
+
+/* exported subroutines */
+
+int ifloor(int v,int m) noex {
+	return xfloor(v,m) ;
+} /* end subroutine (ifloor) */
+
+long lfloor(long v,int m) noex {
+	return xfloor(v,m) ;
+} /* end subroutine (lfloor) */
+
+longlong llfloor(longlong v,int m) noex {
+	return xfloor(v,m) ;
+} /* end subroutine (llfloor) */
+
+intptr_t ipfloor(intptr_t v,int m) noex {
+	return xfloor(v,m) ;
+} /* end subroutine (ipfloor) */
+
+
+uint ufloor(uint v,int m) noex {
+	return xfloor(v,m) ;
+} /* end subroutine (ufloor) */
+
+ulong ulfloor(ulong v,int m) noex {
+	return xfloor(v,m) ;
+} /* end subroutine (ulfloor) */
+
+ulonglong ullfloor(ulonglong v,int m) noex {
+	return xfloor(v,m) ;
+} /* end subroutine (ullfloor) */
+
+uintptr_t uipfloor(uintptr_t v,int m) noex {
+	return xfloor(v,m) ;
+} /* end subroutine (uipfloor) */
+
+
