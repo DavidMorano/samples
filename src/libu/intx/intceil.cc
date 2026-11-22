@@ -1,0 +1,134 @@
+/* intceil SUPPORT */
+/* charset=ISO8859-1 */
+/* lang=C++20 (conformance reviewed) */
+
+/* Integer-Ceiling */
+/* version %I% last-modified %G% */
+
+
+/* revision history:
+
+	= 1998-11-01, David A­D­ Morano
+	This code was originally written.
+
+*/
+
+/* Copyright © 1998 David A­D­ Morano.  All rights reserved. */
+
+/*******************************************************************************
+
+	Name:
+	{x}ceil
+
+	Description:
+	This subroutine calculates the unsigned ceiling of a number
+	given a specified modulus.
+
+	Synopsis:
+	int {x}ceil({xx} v,int m) noex
+
+	Arguments:
+	{x}	i, l, ll, u, ul, ull
+	v	number to find the ceiling for
+	m	the modulus to use in the calculation
+
+	Returns:
+	-	the ceiling value
+
+	Note:
+	Note that a "sequence point" needs to be present in this
+	code so that the total expression doesn't get optimized
+	out!
+
+*******************************************************************************/
+
+#include	<envstandards.h>	/* MUST be first to configure */
+#include	<cstddef>		/* CSTD */
+#include	<cstdlib>		/* CSTD */
+#include	<cstdint>		/* CSTD |uintptr_t| */
+#include	<clanguage.h>		/* LIBU */
+#include	<utypedefs.h>		/* LIBU */
+#include	<utypealiases.h>	/* LIBU */
+#include	<usysdefs.h>		/* LIBU */
+#include	<stdintx.h>		/* LIBU */
+#include	<localmisc.h>		/* LIBU */
+
+#include	"intceil.h"
+
+
+/* local defines */
+
+
+/* imported namespaces */
+
+
+/* local typedefs */
+
+
+/* external subroutines */
+
+
+/* external variables */
+
+
+/* local structures */
+
+
+/* forward references */
+
+template<typename T> local T xceil(T v,int m) noex {
+	const T		n = (v + (m - 1)) / m ;
+	return (n * m) ;
+} /* end subroutine-template (xceil) */
+
+
+/* local variables */
+
+
+/* exported variables */
+
+
+/* exported subroutines */
+
+int iceil(int v,int m) noex {
+	return xceil(v,m) ;
+} /* end subroutine (iceil) */
+
+long lceil(long v,int m) noex {
+	return xceil(v,m) ;
+} /* end subroutine (lceil) */
+
+longlong llceil(longlong v,int m) noex {
+	return xceil(v,m) ;
+} /* end subroutine (llceil) */
+
+off_t ofceil(off_t v,int m) noex {
+	return xceil(v,m) ;
+} /* end subroutine */
+
+intptr_t ipceil(intptr_t v,int m) noex {
+	return xceil(v,m) ;
+} /* end subroutine (ipceil) */
+
+
+uint uceil(uint v,int m) noex {
+	return xceil(v,m) ;
+} /* end subroutine (uceil) */
+
+ulong ulceil(ulong v,int m) noex {
+	return xceil(v,m) ;
+} /* end subroutine (ulceil) */
+
+ulonglong ullceil(ulonglong v,int m) noex {
+	return xceil(v,m) ;
+} /* end subroutine (ullceil) */
+
+size_t szceil(size_t v,int m) noex {
+	return xceil(v,m) ;
+} /* end subroutine */
+
+uintptr_t uipceil(uintptr_t v,int m) noex {
+	return xceil(v,m) ;
+} /* end subroutine (uipceil) */
+
+
