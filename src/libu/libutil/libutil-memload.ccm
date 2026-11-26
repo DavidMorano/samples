@@ -1,0 +1,70 @@
+/* libutil-memload MODULE (primary-partition) */
+/* charset=ISO8859-1 */
+/* lang=C++20 (conformance reviewed) */
+
+/* UNIX® kernel support subroutines */
+/* version %I% last-modified %G% */
+
+
+/* revision history:
+
+	= 2020-10-13, David A­D­ Morano
+	This subroutine was written for Rightcore Network Services.
+
+*/
+
+/* Copyright © 2020 David A­D­ Morano.  All rights reserved. */
+
+module ;
+
+#include	<envstandards.h>	/* ordered first to configure */
+#include	<climits>		/* CSTD |INT_MAX| */
+#include	<cstddef>		/* CSTD */
+#include	<cstdlib>		/* CSTD */
+#include	<cstdarg>		/* CSTD */
+#include	<cstring>		/* CSTD |strlen(3c)| + |strnlen(3c)| */
+#include	<algorithm>		/* C++STD |min(C++)| */
+#include	<clanguage.h>		/* LIBU */
+#include	<utypedefs.h>		/* LIBU */
+#include	<utypealiases.h>	/* LIBU */
+#include	<usysdefs.h>		/* LIBU */
+#include	<usysrets.h>		/* LIBU */
+#include	<localmisc.h>		/* LIBU */
+
+export module libutil:memload ;
+
+export {
+    constexpr inline int memload(void *dp,cvoid *sp,int sl) noex {
+	int		rs = SR_FAULT ;
+	int		len = 0 ; /* return-value */
+	if (dp && sp) ylikely {
+	    rs = SR_OK ;
+	    if (sl < 0) {
+	        cchar *cp = charp(sp) ;
+	        sl = intconv(strlen(cp)) ;
+	    } /* end */
+	    if (sl > 0) {
+	        csize srcsize = size_t(sl) ;
+	        memcpy(dp,sp,srcsize) ;
+	        len = sl ;
+	    } /* end block */
+	} /* end if (non-null) */
+	return (rs >= 0) ? len : rs ;
+    } /* end subroutine (memload) */
+    template<typename T>
+    constexpr inline int memload(T *dp,cvoid *sp) noex {
+	int		rs = SR_FAULT ;
+	int		len = 0 ; /* return-value */
+	if (dp && sp) ylikely {
+	    rs = SR_BUGCHECK ;
+	    if (csize dstsize = sizeof(T) ; dstsize > 0) {
+		rs = SR_OK ;
+	        memcpy(dp,sp,dstsize) ;
+	        len = intconv(dstsize) ;
+	    } /* end block */
+	} /* end if (non-null) */
+	return (rs >= 0) ? len : rs ;
+    } /* end subroutine (memload) */
+} /* end export */
+
+
